@@ -9,6 +9,10 @@ var apiRoutes         = require('./routes/api.js');
 var fccTestingRoutes  = require('./routes/fcctesting.js');
 var runner            = require('./test-runner');
 
+var ConvertHandler = require('./controllers/convertHandler.js');
+var convertHandler = new ConvertHandler();
+
+
 var app = express();
 
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -22,6 +26,31 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.route('/')
   .get(function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
+  });
+
+app.route('/api/convert')
+  .get((req, res) => {
+    return res.json({
+      initNum: convertHandler.getNum(req.query.input),
+      initUnit: convertHandler.getUnit(req.query.input),
+      returnNum: convertHandler.convert(
+        convertHandler.getNum(req.query.input),
+        convertHandler.getUnit(req.query.input)
+      ),
+      returnUnit: convertHandler.getReturnUnit(
+        convertHandler.getUnit(req.query.input)
+      ),
+      string: convertHandler.getString(
+        convertHandler.getNum(req.query.input),
+        convertHandler.getUnit(req.query.input),convertHandler.convert(
+          convertHandler.getNum(req.query.input),
+          convertHandler.getUnit(req.query.input)
+        ),
+        convertHandler.getReturnUnit(
+          convertHandler.getUnit(req.query.input)
+        )
+      )
+    });
   });
 
 //For FCC testing purposes
